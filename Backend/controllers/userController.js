@@ -8,9 +8,10 @@ const registerUser = async (req, res) => {
     const { email } = req.body;
     const userFound = await User.findOne({ email });
     if (userFound) {
+      const error = new Error('User already exist')
       return res.status(400).json({
         status: 400,
-        message: "User already exist",
+        message: error.message,
         data: userFound,
       });
     }
@@ -38,15 +39,17 @@ const auth = async (req, res) => {
     const userFound = await User.findOne({ email }).select("+password");
     //Check if user exist
     if (!userFound) {
+      const error = new Error('User doesnt exist')
       return res
         .status(403)
-        .json({ status: 403, message: "User doesnt exist" });
+        .json({ status: 403, message: error.message });
     }
     //Check if user is confirmed
     if (!userFound.confirmed) {
+      const error = new Error("User dont confirmed")
       return res
         .status(403)
-        .json({ status: 403, message: "User dont confirmed" });
+        .json({ status: 403, message: error.message });
     }
     //Check if password is correct
     if (await userFound.validatePassword(password)) {
@@ -61,18 +64,24 @@ const auth = async (req, res) => {
         },
       });
     } else {
+      const error = new Error('Password incorrect')
       return res
-        .status(403)
-        .json({ status: 403, message: "Password incorrect" });
+        .status(401)
+        .json({ status: 401, message: error.message });
     }
-  } catch (error) {}
+  } catch (error) {
+    return res
+        .status(403)
+        .json({ status: 403, message: error.message });
+  }
 };
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const userFound = await User.findOne({ email });
   if (!userFound) {
-    return res.status(403).json({ status: 403, message: "User doesnt exist" });
+    const error = new Error('User doesnt exist')
+    return res.status(403).json({ status: 403, message: error.message });
   }
   try {
     userFound.token = generateId();
@@ -90,7 +99,8 @@ const resetPassword = async (req, res) => {
   const { password } = req.body;
   const userFound = await User.findOne({ token });
   if (!userFound) {
-    return res.status(404).json({ status: 404, message: "Token invalid" });
+    const error = new Error('Token invalid')
+    return res.status(404).json({ status: 404, message: error.message });
   }
   try {
     userFound.password = password;
@@ -147,7 +157,8 @@ const confirm = async (req, res) => {
   const { token } = req.params;
   const userFound = await User.findOne({ token });
   if (!userFound) {
-    return res.status(404).json({ status: 404, message: "Token invalid" });
+    const error = new Error('Token invalid')
+    return res.status(404).json({ status: 404, message: error.message });
   }
   try {
     userFound.confirmed = true;
@@ -169,7 +180,8 @@ const checkToken = async (req, res) => {
   const { token } = req.params;
   const tokenValid = await User.findOne({ token });
   if (!tokenValid) {
-    return res.status(404).json({ status: 404, message: "Token invalid" });
+    const error = new Error('Token invalid')
+    return res.status(404).json({ status: 404, message: error.message });
   }
   return res
     .status(200)
@@ -212,7 +224,7 @@ const deleteUser = async (req, res) => {
     const result = await User.remove({ _id: id });
     const resultJson = {
       status: 200,
-      message: "User updated",
+      message: "User deleted",
       data: result,
     };
     return res.json(resultJson);
