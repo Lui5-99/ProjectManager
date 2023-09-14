@@ -69,19 +69,40 @@ const auth = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-  const { email } = req.body
+  const { email } = req.body;
   const userFound = await User.findOne({ email });
   if (!userFound) {
     return res.status(403).json({ status: 403, message: "User doesnt exist" });
   }
-  try{
-    userFound.token = generateId()
-    const result = await userFound.save()
-    return res.status(200).json({status: 200, message: "We've sent an email with instructions"})
-  }catch(error){
-    return res.status(400).json({status: 400, message: error})
+  try {
+    userFound.token = generateId();
+    const result = await userFound.save();
+    return res
+      .status(200)
+      .json({ status: 200, message: "We've sent an email with instructions" });
+  } catch (error) {
+    return res.status(400).json({ status: 400, message: error });
   }
-}
+};
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  const userFound = await User.findOne({ token });
+  if (!userFound) {
+    return res.status(404).json({ status: 404, message: "Token invalid" });
+  }
+  try {
+    userFound.password = password;
+    userFound.token = "";
+    const result = await userFound.save();
+    return res
+      .status(200)
+      .json({ status: 200, message: "Password reset", data: result });
+  } catch (error) {
+    return res.status(403).json({ status: 403, message: error.message });
+  }
+};
 
 //GET
 const getUsers = async (req, res) => {
@@ -102,10 +123,11 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await User.findById(id);
+    const _id = id
+    const result = await User.findById(_id);
     const resultJson = {
       status: 201,
       message: "User by Id",
@@ -128,9 +150,9 @@ const confirm = async (req, res) => {
     return res.status(404).json({ status: 404, message: "Token invalid" });
   }
   try {
-    userFound.confirmed = true
-    userFound.token = ''
-    const result = await userFound.save()
+    userFound.confirmed = true;
+    userFound.token = "";
+    const result = await userFound.save();
     return res
       .status(200)
       .json({ status: 200, message: "User confirmed", data: result });
@@ -144,19 +166,26 @@ const confirm = async (req, res) => {
 };
 
 const checkToken = async (req, res) => {
-  const { token } = req.params
-  const tokenValid = await User.findOne({ token })
-  if(!tokenValid){
+  const { token } = req.params;
+  const tokenValid = await User.findOne({ token });
+  if (!tokenValid) {
     return res.status(404).json({ status: 404, message: "Token invalid" });
   }
-  return res.status(200).json({ status: 200, message: "Token valid and user found" });
+  return res
+    .status(200)
+    .json({ status: 200, message: "Token valid and user found" });
+};
+
+const profile = async (req, res) => {
+  const { user } = req
+  return res.status(200).json({status: 200, message: 'Profile Authenticated', data: user})
 }
 
 //PUT
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, age, phone } = req.body;
+    const { name, password, email, token, confirmed } = req.body;
     const result = await User.updateOne(
       { _id: id },
       { $set: { name, password, email, token, confirmed } }
@@ -198,9 +227,11 @@ const deleteUser = async (req, res) => {
 
 export {
   getUsers,
-  getUser,
+  getUserById,
   confirm,
   checkToken,
+  profile,
+  resetPassword,
   forgotPassword,
   registerUser,
   auth,

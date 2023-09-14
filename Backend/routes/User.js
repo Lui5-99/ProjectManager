@@ -1,30 +1,35 @@
 import express from "express";
 import {
   getUsers,
-  getUser,
+  getUserById,
   confirm,
   checkToken,
+  profile,
   forgotPassword,
+  resetPassword,
   registerUser,
   auth,
   updateUser,
   deleteUser,
 } from "../controllers/userController.js";
+import checkAuth from "../middleware/checkAuth.js";
 
 const router = express.Router();
 
-//Create
+//POST
 router.post("/", registerUser);
 router.post("/login", auth);
 router.post("/forgotpassword", forgotPassword)
+router.post("/forgotpassword/:token", resetPassword)
 
-//Read
+//GET
 router.get("/", getUsers);
-router.get("/:id", getUser);
+//router.get("/:id", getUserById);
 router.get("/confirm/:token", confirm);
 router.get("/forgotpassword/:token", checkToken)
+router.get("/profile", checkAuth, profile)
 
-//Update
+//PUT
 router.put("/:id", updateUser);
 
 //Delete
