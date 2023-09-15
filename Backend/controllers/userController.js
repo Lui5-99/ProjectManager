@@ -1,5 +1,6 @@
 import generateId from "../helpers/generateId.js";
 import generateJWT from "../helpers/generateJWT.js";
+import { emailForgotpPassword, emailSignUp } from '../helpers/emails.js'
 import User from "../models/User.js";
 
 //POST
@@ -23,6 +24,11 @@ const registerUser = async (req, res) => {
       message: "User created",
       data: result,
     };
+    emailSignUp({
+      email: result.email,
+      name: result.name,
+      token: result.token,
+    })
     return res.json(resultJson);
   } catch (error) {
     const resultJson = {
@@ -46,7 +52,7 @@ const auth = async (req, res) => {
     }
     //Check if user is confirmed
     if (!userFound.confirmed) {
-      const error = new Error("User dont confirmed")
+      const error = new Error("User not confirmed")
       return res
         .status(403)
         .json({ status: 403, message: error.message });
@@ -86,9 +92,14 @@ const forgotPassword = async (req, res) => {
   try {
     userFound.token = generateId();
     const result = await userFound.save();
+    emailForgotpPassword({
+      email: result.email,
+      name: result.name,
+      token: result.token,
+    })
     return res
       .status(200)
-      .json({ status: 200, message: "We've sent an email with instructions" });
+      .json({ status: 200, message: "We've sent an email with instructions", data: result });
   } catch (error) {
     return res.status(400).json({ status: 400, message: error });
   }
