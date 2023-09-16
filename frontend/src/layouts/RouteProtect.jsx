@@ -10,7 +10,7 @@ const RouteProtect = () => {
   return (
     <>
       {auth._id ? (
-        <div className="bg-gray-100">
+        <div className="bg-gray-100 dark:bg-zinc-700">
           <Header />
           <div className="md:flex md:min-h-screen">
             <Sidebar />

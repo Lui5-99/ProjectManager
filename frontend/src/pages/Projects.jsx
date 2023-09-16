@@ -6,7 +6,7 @@ const Projects = () => {
 
   return (
     <>
-      <h1 className="text-4xl font-black">Projects</h1>
+      <h1 className="text-4xl font-black dark:text-white">Projects</h1>
       <div>
 
       </div>
