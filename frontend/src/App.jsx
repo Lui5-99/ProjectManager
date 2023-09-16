@@ -10,24 +10,27 @@ import { AuthProvider } from "./context/AuthProvider";
 import RouteProtect from "./layouts/RouteProtect";
 import Projects from "./pages/Projects";
 import Newproject from "./pages/Newproject";
+import { ProjectProvider } from "./context/ProjectContext";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<AuthLayout />}>
-            <Route index element={<Login />} />
-            <Route path="signup" element={<Signup />} />
-            <Route path="forgotpassword" element={<Forgotpassword />} />
-            <Route path="forgotpassword/:id" element={<Resetpassword />} />
-            <Route path="confirmaccount/:id" element={<Confirmaccount />} />
-          </Route>
-          <Route path="/projects" element={<RouteProtect />}>
-            <Route index element={<Projects />} />
-            <Route path="newproject" element={<Newproject />} />
-          </Route>
-        </Routes>
+        <ProjectProvider>
+          <Routes>
+            <Route path="/" element={<AuthLayout />}>
+              <Route index element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+              <Route path="forgotpassword" element={<Forgotpassword />} />
+              <Route path="forgotpassword/:id" element={<Resetpassword />} />
+              <Route path="confirmaccount/:id" element={<Confirmaccount />} />
+            </Route>
+            <Route path="/projects" element={<RouteProtect />}>
+              <Route index element={<Projects />} />
+              <Route path="newproject" element={<Newproject />} />
+            </Route>
+          </Routes>
+        </ProjectProvider>
       </AuthProvider>
     </BrowserRouter>
   );
