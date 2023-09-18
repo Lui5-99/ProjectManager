@@ -47,7 +47,7 @@ const getProject = async (req, res) => {
     const tasks = await Task.find().where('project').equals(result._id)
     return res
       .status(200)
-      .json({ status: 200, message: "Project found", data: {project: result, tasks} });
+      .json({ status: 200, message: "Project found", data: result });
   } catch (error) {
     return res
       .status(404)

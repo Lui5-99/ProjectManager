@@ -11,6 +11,8 @@ import RouteProtect from "./layouts/RouteProtect";
 import Projects from "./pages/Projects";
 import Newproject from "./pages/Newproject";
 import { ProjectProvider } from "./context/ProjectContext";
+import Project from "./pages/Project";
+import EditProject from "./pages/EditProject";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path="/projects" element={<RouteProtect />}>
               <Route index element={<Projects />} />
               <Route path="newproject" element={<Newproject />} />
+              <Route path=":id" element={<Project />} />
+              <Route path="edit/:id" element={<EditProject />} />
             </Route>
           </Routes>
         </ProjectProvider>

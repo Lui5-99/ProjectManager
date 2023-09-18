@@ -11,6 +11,7 @@ const Login = () => {
   const [alert, setAlert] = useState({});
 
   const { setAuth } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +33,7 @@ const Login = () => {
         msg: data.message,
         error: false,
       })
+      navigate('/projects')
     } catch (error) {
       setAlert({
         msg: error.response.data.message,
