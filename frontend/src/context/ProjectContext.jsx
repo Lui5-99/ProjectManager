@@ -9,14 +9,21 @@ const ProjectProvider = ({ children }) => {
   const [project, setProject] = useState({});
   const [alert, setAlert] = useState({});
   const [load, setLoad] = useState(false);
+  const [theme, setTheme] = useState('');
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    const _theme = localStorage.getItem("theme");
+    if(_theme){
+      setTheme(_theme)
+    }
     const getProjects = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!token) {
+          return
+        };
         const config = {
           headers: {
             "Content-Type": "application/json",
@@ -29,6 +36,15 @@ const ProjectProvider = ({ children }) => {
     };
     getProjects();
   }, []);
+
+  useEffect(() => {
+    if(theme === 'dark'){
+      document.querySelector("html").classList.add('dark')
+    }
+    else{
+      document.querySelector("html").classList.remove('dark')
+    }
+  }, [theme])
 
   const showAlert = (alert) => {
     setAlert(alert);
@@ -57,7 +73,7 @@ const ProjectProvider = ({ children }) => {
       };
       const { data } = await clientAxios.post("/projects", project, config);
 
-      setProjects([...projects], data.data);
+      setProjects([...projects, data.data]);
 
       setAlert({
         msg: "Project created!!!",
@@ -167,6 +183,8 @@ const ProjectProvider = ({ children }) => {
         project,
         load,
         deleteProject,
+        theme, 
+        setTheme,
       }}
     >
       {children}

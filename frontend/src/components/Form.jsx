@@ -50,17 +50,17 @@ const Form = () => {
   const { msg } = alert
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 py-10 px-5 md:w-1/2 rounded-lg shadow">
       {msg && <Alert alert={alert} /> }
       <div className="mb-5">
         <label
           htmlFor="name"
-          className="text-gray-700 uppercase font-bold text-sm"
+          className="text-gray-700 dark:text-white uppercase font-bold text-sm"
         >Project name</label>
         <input
           type="text"
           id="name"
-          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:bg-gray-500 dark:placeholder:text-white dark:border-white dark:text-white"
           placeholder="Project name"
           value={name}
           onChange={e => { setName(e.target.value) }}
@@ -69,11 +69,11 @@ const Form = () => {
       <div className="mb-5">
         <label
           htmlFor="description"
-          className="text-gray-700 uppercase font-bold text-sm"
+          className="text-gray-700 uppercase font-bold text-sm dark:text-white"
         >Description</label>
         <textarea
           id="description"
-          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:bg-gray-500 dark:placeholder:text-white dark:border-white dark:text-white"
           placeholder="Description"
           value={description}
           onChange={e => { setDescription(e.target.value) }}
@@ -82,12 +82,12 @@ const Form = () => {
       <div className="mb-5">
         <label
           htmlFor="deadline"
-          className="text-gray-700 uppercase font-bold text-sm"
+          className="text-gray-700 uppercase font-bold text-sm dark:text-white"
         >Deadline</label>
         <input
           id="deadline"
           type="date"
-          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:bg-gray-500 dark:placeholder:text-white dark:border-white dark:text-white"
           placeholder="Description"
           value={deadline}
           onChange={e => { setDeadline(e.target.value) }}
@@ -96,12 +96,12 @@ const Form = () => {
       <div className="mb-5">
         <label
           htmlFor="nameClient"
-          className="text-gray-700 uppercase font-bold text-sm"
+          className="text-gray-700 uppercase font-bold text-sm dark:text-white"
         >Client name</label>
         <input
           type="text"
           id="nameClient"
-          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+          className="border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:bg-gray-500 dark:placeholder:text-white dark:border-white dark:text-white"
           placeholder="Client name"
           value={client}
           onChange={e => { setClient(e.target.value) }}

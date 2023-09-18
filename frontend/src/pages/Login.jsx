@@ -27,7 +27,9 @@ const Login = () => {
         email, 
         password
       })
-      localStorage.setItem('token', data.data.token)
+      setTimeout(() => {
+        localStorage.setItem('token', data.data.token)
+      }, 1000);
       setAuth(data.data)
       setAlert({
         msg: data.message,
