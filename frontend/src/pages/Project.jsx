@@ -3,11 +3,12 @@ import useProject from "../hooks/useProjects";
 import { useEffect, useState } from "react";
 import LoadCards from "../components/LoadCards";
 import ModalFormTask from "../components/ModalFormTask";
+import Task from "../components/Task";
 
 const Project = () => {
   const params = useParams();
 
-  const { getProject, project, load } = useProject();
+  const { getProject, project, load, handleModalTask } = useProject();
 
   const [modal, setModal] = useState(false);
 
@@ -17,7 +18,19 @@ const Project = () => {
 
   const { name } = project;
 
-  if (load) return <LoadCards />;
+  console.log(project)
+
+  if (load){
+    return(
+      <>
+        <LoadCards />
+        <LoadCards />
+        <LoadCards />
+        <LoadCards />
+        <LoadCards />
+      </>
+    )
+  }
 
   return (
     <>
@@ -48,7 +61,7 @@ const Project = () => {
         </div>
       </div>
       <button
-        onClick={() => {setModal(true)}}
+        onClick={handleModalTask}
         type="button"
         className="flex items-center gap-2 text-sm px-5 py-3 w-full md:w-auto rounded-lg font-bold uppercase bg-sky-400 text-white text-center mt-5"
       >
@@ -66,10 +79,17 @@ const Project = () => {
         </svg>
         New task
       </button>
-      <ModalFormTask
-        modal={modal}
-        setModal={setModal}
-      />
+      <p className="font-bold text-xl mt-10">Project task</p>
+      <div className="bg-white shadow mt-10 rounded-lg">
+        {project.tasks?.length ? (
+          project.tasks?.map(task => (
+            <Task key={task._id} task={task} />
+          ))
+        ) : (
+          <p className="text-center my-5 p-10">Dont have task yet</p>
+        )}
+      </div>
+      <ModalFormTask/>
     </>
   );
 };

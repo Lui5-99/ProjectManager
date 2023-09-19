@@ -12,7 +12,8 @@ const addTask = async (req, res) => {
     }
 
     const result = await Task.create(req.body);
-
+    isProject.tasks.push(result._id)
+    await isProject.save()
     return res
       .status(201)
       .json({ status: 201, message: "Task created", data: result });

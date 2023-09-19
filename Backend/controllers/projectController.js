@@ -25,7 +25,7 @@ const addTeammate = async (req, res) => {
 //GET
 const getProjects = async (req, res) => {
   try {
-    const result = await Project.find().where("createdBy").equals(req.user._id);
+    const result = await Project.find().where("createdBy").equals(req.user._id).select('-tasks');
     return res
       .status(200)
       .json({ status: 200, message: "List of all projects", data: result });
@@ -39,7 +39,7 @@ const getProjects = async (req, res) => {
 const getProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await Project.findById(id);
+    const result = await Project.findById(id).populate('tasks');
     if (result.createdBy.toString() !== req.user._id.toString()) {
       const error = new Error("Dont have permissions 4 this project");
       return res.status(401).json({ status: 401, message: error.message });

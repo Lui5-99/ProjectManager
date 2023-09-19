@@ -1,16 +1,48 @@
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import useProjects from "../hooks/useProjects";
+import Alert from "./Alert";
+import { useParams } from "react-router-dom";
 
-const ModalFormTask = ({modal, setModal}) => {
+const PRIORITY = ["Low", "Medium", "High"];
+
+const ModalFormTask = () => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [priority, setPriority] = useState("");
+  const { handleModalTask, modalTask, showAlert, alert, submitTask } =
+    useProjects();
+
+  const params = useParams()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if ([name, description, priority].includes("")) {
+      showAlert({
+        msg: "All fields are required",
+        error: true,
+      });
+      setTimeout(() => {
+        showAlert({});
+      }, 3000);
+      return;
+    }
+    await submitTask({ name, description, deadline, priority, project: params.id });
+    setName('')
+    setDescription('')
+    setDeadline('')
+    setPriority('')
+  };
+
+  const { msg } = alert;
 
   return (
-    <Transition.Root show={modal} as={Fragment}>
+    <Transition.Root show={modalTask} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        onClose={() => {
-            setModal(false)
-        }}
+        onClose={handleModalTask}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -47,7 +79,7 @@ const ModalFormTask = ({modal, setModal}) => {
                 <button
                   type="button"
                   className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => {setModal(false)}}
+                  onClick={handleModalTask}
                 >
                   <span className="sr-only">Cerrar</span>
                   <svg
@@ -69,11 +101,94 @@ const ModalFormTask = ({modal, setModal}) => {
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg leading-6 font-bold text-gray-900"
+                    className="text-lg leading-6 font-bold text-gray-900 uppercase"
                   >
-                    <h1 className="text-4xl font-bold uppercase">New Task</h1>
+                    New Task
                   </Dialog.Title>
-                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas veritatis quaerat architecto quisquam quam nostrum atque nobis exercitationem fugiat? Modi consectetur quidem perferendis, ad expedita aliquid in itaque quisquam omnis.</p>
+                  {msg && <Alert alert={alert} />}
+                  <form onSubmit={handleSubmit} className="my-10">
+                    <div className="mb-5">
+                      <label
+                        className="text-gray-700 uppercase font-bold text-sm"
+                        htmlFor="task"
+                      >
+                        Task
+                      </label>
+                      <input
+                        id="task"
+                        type="text"
+                        placeholder="Task name"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        value={name}
+                        onChange={(e) => {
+                          setName(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        className="text-gray-700 uppercase font-bold text-sm"
+                        htmlFor="description"
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        id="description"
+                        placeholder="Description task"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        value={description}
+                        onChange={(e) => {
+                          setDescription(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="deadline"
+                        className="text-gray-700 uppercase font-bold text-sm"
+                      >
+                        Deadline
+                      </label>
+                      <input
+                        id="deadline"
+                        type="date"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        placeholder="Description"
+                        value={deadline}
+                        onChange={(e) => {
+                          setDeadline(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        className="text-gray-700 uppercase font-bold text-sm"
+                        htmlFor="priority"
+                      >
+                        Priority
+                      </label>
+                      <select
+                        id="priority"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        value={priority}
+                        onChange={(e) => {
+                          setPriority(e.target.value);
+                        }}
+                      >
+                        <option value="">-- Select --</option>
+                        {PRIORITY.map((p) => (
+                          <option key={p} value={p}>
+                            {p}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <input
+                      type="submit"
+                      className="bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded text-sm"
+                      value="Create task"
+                    />
+                  </form>
                 </div>
               </div>
             </div>

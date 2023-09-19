@@ -10,6 +10,7 @@ const ProjectProvider = ({ children }) => {
   const [alert, setAlert] = useState({});
   const [load, setLoad] = useState(false);
   const [theme, setTheme] = useState('');
+  const [modalTask, setModalTask] = useState(false)
 
   const navigate = useNavigate();
 
@@ -172,6 +173,31 @@ const ProjectProvider = ({ children }) => {
     }
   };
 
+  const handleModalTask = () => {
+    setModalTask(!modalTask)
+  }
+
+  const submitTask = async (task) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.post('/tasks', task, config)
+      const projectCopy = {...project}
+      projectCopy.tasks = [...project.tasks, data.data]
+      setProject(projectCopy)
+      setAlert({})
+      setModalTask(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <ProjectContext.Provider
       value={{
@@ -185,6 +211,9 @@ const ProjectProvider = ({ children }) => {
         deleteProject,
         theme, 
         setTheme,
+        handleModalTask,
+        modalTask,
+        submitTask
       }}
     >
       {children}
