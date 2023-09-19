@@ -10,7 +10,6 @@ const Sidebar = () => {
     const min = 0;
     const max = emojis.length - 1
     let index = Math.floor(Math.random() * +max - +min) + +min;
-    console.log(index)
     setEmoji(emojis[index])
   }, [])
 

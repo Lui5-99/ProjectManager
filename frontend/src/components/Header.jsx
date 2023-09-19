@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import Theme from "./Theme";
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <header className="px-4 py-5 bg-white dark:bg-zinc-900 border-b dark:border-black">
       <div className="md:flex md:justify-between">
-        <h2 className="text-4xl text-sky-600 dark:text-indigo-600 font-black text-center">
-          Project Manager
-        </h2>
+        <Link to="/projects">
+          <h2 className="text-4xl text-sky-600 dark:text-indigo-600 font-black text-center">
+            Project Manager
+          </h2>
+        </Link>
         <input
           type="search"
           placeholder="Search project"
@@ -25,8 +27,8 @@ const Header = () => {
             type="button"
             className="text-white text-sm bg-sky-600 hover:bg-sky-800 dark:bg-indigo-600 dark:hover:bg-indigo-800 p-3 rounded-md uppercase font-bold transition-all"
             onClick={() => {
-              localStorage.clear()
-              navigate('/')
+              localStorage.clear();
+              navigate("/");
             }}
           >
             Log Out
