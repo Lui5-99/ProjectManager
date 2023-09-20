@@ -1,9 +1,10 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Theme from "./Theme";
+import useProject from "../hooks/useProjects";
 
 const Header = () => {
-  const navigate = useNavigate();
+  const {logout} = useProject();
 
   return (
     <header className="px-4 py-5 bg-white dark:bg-zinc-900 border-b dark:border-black">
@@ -26,10 +27,7 @@ const Header = () => {
           <button
             type="button"
             className="text-white text-sm bg-sky-600 hover:bg-sky-800 dark:bg-indigo-600 dark:hover:bg-indigo-800 p-3 rounded-md uppercase font-bold transition-all"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/");
-            }}
+            onClick={logout}
           >
             Log Out
           </button>

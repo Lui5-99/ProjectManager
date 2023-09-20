@@ -1,5 +1,4 @@
 export const formatDate = (date) => {
-  console.log(date);
   const newDate = new Date(date);
   const config = {
     weekday: "long",

@@ -18,7 +18,6 @@ const Project = () => {
 
   const { name } = project;
 
-  console.log(project)
 
   if (load){
     return(
@@ -79,11 +78,11 @@ const Project = () => {
         </svg>
         New task
       </button>
-      <p className="font-bold text-xl mt-10">Project task</p>
-      <div className="bg-white shadow mt-10 rounded-lg">
+      <p className="font-bold text-xl mt-10 dark:text-white">Project task</p>
+      <div className="bg-white dark:bg-zinc-900 shadow mt-10 rounded-lg">
         {project.tasks?.length ? (
           project.tasks?.map(task => (
-            <Task key={task._id} task={task} />
+            <Task key={task._id} task={task} handleModalTask={handleModalTask} />
           ))
         ) : (
           <p className="text-center my-5 p-10">Dont have task yet</p>

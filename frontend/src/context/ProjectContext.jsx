@@ -7,24 +7,26 @@ const ProjectContext = createContext();
 const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
+  const [task, setTask] = useState({});
   const [alert, setAlert] = useState({});
   const [load, setLoad] = useState(false);
-  const [theme, setTheme] = useState('');
-  const [modalTask, setModalTask] = useState(false)
+  const [theme, setTheme] = useState("");
+  const [modalTask, setModalTask] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const _theme = localStorage.getItem("theme");
-    if(_theme){
-      setTheme(_theme)
+    if (_theme) {
+      setTheme(_theme);
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("no token");
+      return;
     }
     const getProjects = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          return
-        };
         const config = {
           headers: {
             "Content-Type": "application/json",
@@ -39,13 +41,12 @@ const ProjectProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if(theme === 'dark'){
-      document.querySelector("html").classList.add('dark')
+    if (theme === "dark") {
+      document.querySelector("html").classList.add("dark");
+    } else {
+      document.querySelector("html").classList.remove("dark");
     }
-    else{
-      document.querySelector("html").classList.remove('dark')
-    }
-  }, [theme])
+  }, [theme]);
 
   const showAlert = (alert) => {
     setAlert(alert);
@@ -155,12 +156,12 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.delete(`/projects/${id}`, config);
-      const deletes = projects.filter(e => e._id !== id)
-      setProjects(deletes)
+      const deletes = projects.filter((e) => e._id !== id);
+      setProjects(deletes);
       setAlert({
         msg: data.data.message,
-        error: false
-      })
+        error: false,
+      });
       setTimeout(() => {
         setAlert({});
         navigate("/projects");
@@ -168,16 +169,17 @@ const ProjectProvider = ({ children }) => {
     } catch (error) {
       setAlert({
         msg: error.response.data.message,
-        error: true
-      })
+        error: true,
+      });
     }
   };
 
   const handleModalTask = () => {
-    setModalTask(!modalTask)
-  }
+    setModalTask(!modalTask);
+    setTask({});
+  };
 
-  const submitTask = async (task) => {
+  const createTask = async (task) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -187,16 +189,57 @@ const ProjectProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await clientAxios.post('/tasks', task, config)
-      const projectCopy = {...project}
-      projectCopy.tasks = [...project.tasks, data.data]
-      setProject(projectCopy)
+      const { data } = await clientAxios.post("/tasks", task, config);
+      const projectCopy = { ...project };
+      projectCopy.tasks = [...project.tasks, data.data];
+      setProject(projectCopy);
+      setAlert({});
+      setModalTask(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editTask = async (task) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.put(`/tasks/${task.id}`, task, config);
+      const copy = {...project}
+      copy.tasks = copy.map(p => p._id === data.data._id  ? data.data : p)
+      setProject(copy)
       setAlert({})
       setModalTask(false)
     } catch (error) {
       console.log(error)
     }
-  }
+  };
+
+  const submitTask = async (task) => {
+    if (task?.id) {
+      await createTask(task);
+    } else {
+      await editTask(task);
+    }
+  };
+
+  const logout = () => {
+    setProject({});
+    setProjects([]);
+    localStorage.clear();
+    navigate("/");
+  };
+
+  const handleModalEditTask = async (task) => {
+    setTask(task);
+    setModalTask(true);
+  };
 
   return (
     <ProjectContext.Provider
@@ -209,11 +252,14 @@ const ProjectProvider = ({ children }) => {
         project,
         load,
         deleteProject,
-        theme, 
+        theme,
         setTheme,
         handleModalTask,
         modalTask,
-        submitTask
+        submitTask,
+        logout,
+        handleModalEditTask,
+        task,
       }}
     >
       {children}

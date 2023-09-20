@@ -3,18 +3,36 @@ import { Dialog, Transition } from "@headlessui/react";
 import useProjects from "../hooks/useProjects";
 import Alert from "./Alert";
 import { useParams } from "react-router-dom";
+import { formatDate } from "../helpers/formatDate";
 
 const PRIORITY = ["Low", "Medium", "High"];
 
 const ModalFormTask = () => {
+  const [id, setId] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [priority, setPriority] = useState("");
-  const { handleModalTask, modalTask, showAlert, alert, submitTask } =
+  const { handleModalTask, modalTask, showAlert, alert, submitTask, task } =
     useProjects();
 
-  const params = useParams()
+  useEffect(() => {
+    if (Object.keys(task).length > 0) {
+      setId(task._id);
+      setName(task.name);
+      setDescription(task.description);
+      setDeadline(task.deadline?.split("T")[0]);
+      setPriority(task.priority);
+    } else {
+      setId(null);
+      setName("");
+      setDescription("");
+      setDeadline("");
+      setPriority("");
+    }
+  }, [task]);
+
+  const params = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,11 +46,18 @@ const ModalFormTask = () => {
       }, 3000);
       return;
     }
-    await submitTask({ name, description, deadline, priority, project: params.id });
-    setName('')
-    setDescription('')
-    setDeadline('')
-    setPriority('')
+    await submitTask({
+      id,
+      name,
+      description,
+      deadline,
+      priority,
+      project: params.id,
+    });
+    setName("");
+    setDescription("");
+    setDeadline("");
+    setPriority("");
   };
 
   const { msg } = alert;
@@ -74,14 +99,14 @@ const ModalFormTask = () => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div className="inline-block align-bottom bg-white dark:bg-zinc-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
               <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
                 <button
                   type="button"
-                  className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="bg-white dark:bg-zinc-900 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   onClick={handleModalTask}
                 >
-                  <span className="sr-only">Cerrar</span>
+                  <span className="sr-only">Close</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -101,15 +126,15 @@ const ModalFormTask = () => {
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg leading-6 font-bold text-gray-900 uppercase"
+                    className="text-lg leading-6 font-bold dark:text-white text-gray-900 uppercase"
                   >
-                    New Task
+                    {id ? 'Edit' : 'New'} Task
                   </Dialog.Title>
                   {msg && <Alert alert={alert} />}
                   <form onSubmit={handleSubmit} className="my-10">
                     <div className="mb-5">
                       <label
-                        className="text-gray-700 uppercase font-bold text-sm"
+                        className="text-gray-700 dark:text-white uppercase font-bold text-sm"
                         htmlFor="task"
                       >
                         Task
@@ -118,7 +143,7 @@ const ModalFormTask = () => {
                         id="task"
                         type="text"
                         placeholder="Task name"
-                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:border-white dark:text-white dark:bg-gray-500 dark:placeholder:text-white"
                         value={name}
                         onChange={(e) => {
                           setName(e.target.value);
@@ -127,7 +152,7 @@ const ModalFormTask = () => {
                     </div>
                     <div className="mb-5">
                       <label
-                        className="text-gray-700 uppercase font-bold text-sm"
+                        className="text-gray-700 dark:text-white uppercase font-bold text-sm"
                         htmlFor="description"
                       >
                         Description
@@ -135,7 +160,7 @@ const ModalFormTask = () => {
                       <textarea
                         id="description"
                         placeholder="Description task"
-                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:border-white dark:text-white dark:bg-gray-500 dark:placeholder:text-white"
                         value={description}
                         onChange={(e) => {
                           setDescription(e.target.value);
@@ -145,14 +170,14 @@ const ModalFormTask = () => {
                     <div className="mb-5">
                       <label
                         htmlFor="deadline"
-                        className="text-gray-700 uppercase font-bold text-sm"
+                        className="text-gray-700 dark:text-white uppercase font-bold text-sm"
                       >
                         Deadline
                       </label>
                       <input
                         id="deadline"
                         type="date"
-                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:border-white dark:text-white dark:bg-gray-500 dark:placeholder:text-white"
                         placeholder="Description"
                         value={deadline}
                         onChange={(e) => {
@@ -162,14 +187,14 @@ const ModalFormTask = () => {
                     </div>
                     <div className="mb-5">
                       <label
-                        className="text-gray-700 uppercase font-bold text-sm"
+                        className="text-gray-700 dark:text-white uppercase font-bold text-sm"
                         htmlFor="priority"
                       >
                         Priority
                       </label>
                       <select
                         id="priority"
-                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+                        className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md dark:border-white dark:text-white dark:bg-gray-500 dark:placeholder:text-white"
                         value={priority}
                         onChange={(e) => {
                           setPriority(e.target.value);
@@ -186,7 +211,7 @@ const ModalFormTask = () => {
                     <input
                       type="submit"
                       className="bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded text-sm"
-                      value="Create task"
+                      value={`${id ? 'Edit' : 'Create'} task`}
                     />
                   </form>
                 </div>
