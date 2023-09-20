@@ -12,6 +12,7 @@ const ProjectProvider = ({ children }) => {
   const [load, setLoad] = useState(false);
   const [theme, setTheme] = useState("");
   const [modalTask, setModalTask] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
 
   const navigate = useNavigate();
 
@@ -211,21 +212,23 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.put(`/tasks/${task.id}`, task, config);
-      const copy = {...project}
-      copy.tasks = copy.map(p => p._id === data.data._id  ? data.data : p)
-      setProject(copy)
-      setAlert({})
-      setModalTask(false)
+      const copy = { ...project };
+      copy.tasks = copy.tasks.map((p) =>
+        p._id === data.data._id ? data.data : p
+      );
+      setProject(copy);
+      setAlert({});
+      setModalTask(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
   const submitTask = async (task) => {
     if (task?.id) {
-      await createTask(task);
-    } else {
       await editTask(task);
+    } else {
+      await createTask(task);
     }
   };
 
@@ -239,6 +242,39 @@ const ProjectProvider = ({ children }) => {
   const handleModalEditTask = async (task) => {
     setTask(task);
     setModalTask(true);
+  };
+
+  const handleModalDeleteTask = (task) => {
+    setTask(task);
+    setModalDelete(!modalDelete);
+  };
+
+  const deleteTask = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.delete(`/tasks/${task._id}`, config);
+      const copy = { ...project };
+      copy.tasks = copy.tasks.filter(p => p._id !== task._id)
+      setAlert({
+        msg: data.message,
+        error: false
+      });
+      setProject(copy);
+      setModalDelete(false);
+      setTask({})
+      setTimeout(() => {
+        setAlert({})
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -260,6 +296,9 @@ const ProjectProvider = ({ children }) => {
         logout,
         handleModalEditTask,
         task,
+        handleModalDeleteTask,
+        modalDelete,
+        deleteTask,
       }}
     >
       {children}

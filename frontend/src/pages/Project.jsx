@@ -4,11 +4,20 @@ import { useEffect, useState } from "react";
 import LoadCards from "../components/LoadCards";
 import ModalFormTask from "../components/ModalFormTask";
 import Task from "../components/Task";
+import ModalDeleteTask from "../components/ModalDeleteTask";
+import Alert from "../components/Alert";
 
 const Project = () => {
   const params = useParams();
 
-  const { getProject, project, load, handleModalTask } = useProject();
+  const {
+    getProject,
+    project,
+    load,
+    handleModalTask,
+    handleModalDeleteTask,
+    alert,
+  } = useProject();
 
   const [modal, setModal] = useState(false);
 
@@ -18,9 +27,10 @@ const Project = () => {
 
   const { name } = project;
 
+  const { msg } = alert;
 
-  if (load){
-    return(
+  if (load) {
+    return (
       <>
         <LoadCards />
         <LoadCards />
@@ -28,7 +38,7 @@ const Project = () => {
         <LoadCards />
         <LoadCards />
       </>
-    )
+    );
   }
 
   return (
@@ -79,16 +89,22 @@ const Project = () => {
         New task
       </button>
       <p className="font-bold text-xl mt-10 dark:text-white">Project task</p>
+      <div className="flex justify-center">
+        <div className="md:w-1/3 lg:w-1/4">
+          {msg && <Alert alert={alert} />}
+        </div>
+      </div>
       <div className="bg-white dark:bg-zinc-900 shadow mt-10 rounded-lg">
         {project.tasks?.length ? (
-          project.tasks?.map(task => (
-            <Task key={task._id} task={task} handleModalTask={handleModalTask} />
-          ))
+          project.tasks?.map((task) => <Task key={task._id} task={task} />)
         ) : (
-          <p className="text-center my-5 p-10">Dont have task yet</p>
+          <p className="text-center my-5 p-10 dark:text-white">
+            Dont have task yet
+          </p>
         )}
       </div>
-      <ModalFormTask/>
+      <ModalFormTask />
+      <ModalDeleteTask />
     </>
   );
 };
