@@ -6,6 +6,8 @@ import ModalFormTask from "../components/ModalFormTask";
 import Task from "../components/Task";
 import ModalDeleteTask from "../components/ModalDeleteTask";
 import Alert from "../components/Alert";
+import Teammate from "../components/Teammate";
+import ModalDeleteTeammate from "../components/ModalDeleteTeammate";
 
 const Project = () => {
   const params = useParams();
@@ -42,6 +44,7 @@ const Project = () => {
   }
 
   return (
+    msg && alert.error ? <Alert alert={alert} /> : 
     <>
       <div className="flex justify-between">
         <h1 className="font-black text-4xl dark:text-white">{name}</h1>
@@ -112,8 +115,18 @@ const Project = () => {
           Add
         </Link>
       </div>
+      <div className="bg-white dark:bg-zinc-900 shadow mt-10 rounded-lg">
+        {project.teammates?.length ? (
+          project.teammates?.map((teammate) => <Teammate key={teammate._id} teammate={teammate} />)
+        ) : (
+          <p className="text-center my-5 p-10 dark:text-white">
+            Dont have teammates yet
+          </p>
+        )}
+      </div>
       <ModalFormTask />
       <ModalDeleteTask />
+      <ModalDeleteTeammate />
     </>
   );
 };

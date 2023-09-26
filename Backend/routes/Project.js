@@ -18,6 +18,7 @@ const router = express.Router();
 router.post('/', checkAuth, newProject)
 router.post('/teammates/:id', checkAuth, addTeammate)
 router.post('/teammates', checkAuth, searchTeammate)
+router.post('/removeteammates/:id', checkAuth, removeTeammate)
 
 //GET
 router.get('/', checkAuth, getProjects)
@@ -29,6 +30,5 @@ router.put('/:id', checkAuth, editProject)
 
 //DELETE
 router.delete('/:id', checkAuth, deleteProject)
-router.delete('/teammates/:id', checkAuth, removeTeammate)
 
 export default router

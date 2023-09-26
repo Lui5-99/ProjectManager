@@ -4,16 +4,17 @@ import useProjects from "../hooks/useProjects";
 import Alert from "./Alert";
 import { useParams } from "react-router-dom";
 
-const ModalDeleteTask = () => {
-  const { handleModalDeleteTask, modalDelete, deleteTask, task } =
+const ModalDeleteTeammate = () => {
+
+  const { handleModalDeleteTeammate, modalDeleteTeammate, deleteTeammate } =
     useProjects();
 
   return (
-    <Transition.Root show={modalDelete} as={Fragment}>
+    <Transition.Root show={modalDeleteTeammate} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        onClose={handleModalDeleteTask}
+        onClose={handleModalDeleteTeammate}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -50,7 +51,7 @@ const ModalDeleteTask = () => {
                 <button
                   type="button"
                   className="bg-white dark:bg-zinc-900 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={handleModalDeleteTask}
+                  onClick={handleModalDeleteTeammate}
                 >
                   <span className="sr-only">Close</span>
                   <svg
@@ -88,7 +89,7 @@ const ModalDeleteTask = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold dark:text-white text-gray-900 uppercase"
                   >
-                    Delete Task
+                    Remove teammate
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 dark:text-white">
@@ -101,9 +102,9 @@ const ModalDeleteTask = () => {
                 <button
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={deleteTask}
+                  onClick={deleteTeammate}
                 >
-                  Delete
+                  Remove
                 </button>
                 <button
                   type="button"
@@ -121,4 +122,4 @@ const ModalDeleteTask = () => {
   );
 };
 
-export default ModalDeleteTask;
+export default ModalDeleteTeammate;
