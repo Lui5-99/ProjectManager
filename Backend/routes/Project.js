@@ -7,6 +7,7 @@ import {
   editProject,
   deleteProject,
   addTeammate,
+  searchTeammate,
   removeTeammate,
   getTasks
 } from "../controllers/projectController.js";
@@ -15,8 +16,8 @@ const router = express.Router();
 
 //POST
 router.post('/', checkAuth, newProject)
-router.post('/addteammate/:id', checkAuth, addTeammate)
-router.post('/deleteteammate/:id', checkAuth, removeTeammate)
+router.post('/teammates/:id', checkAuth, addTeammate)
+router.post('/teammates', checkAuth, searchTeammate)
 
 //GET
 router.get('/', checkAuth, getProjects)
@@ -28,5 +29,6 @@ router.put('/:id', checkAuth, editProject)
 
 //DELETE
 router.delete('/:id', checkAuth, deleteProject)
+router.delete('/teammates/:id', checkAuth, removeTeammate)
 
 export default router

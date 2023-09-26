@@ -13,6 +13,7 @@ const ProjectProvider = ({ children }) => {
   const [theme, setTheme] = useState("");
   const [modalTask, setModalTask] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [teammate, setTeammate] = useState({})
 
   const navigate = useNavigate();
 
@@ -140,7 +141,10 @@ const ProjectProvider = ({ children }) => {
       const { data } = await clientAxios.get(`/projects/${id}`, config);
       setProject(data.data);
     } catch (error) {
-      console.log(error);
+      setAlert({
+        msg: error.response.data.message,
+        error: true,
+      });
     } finally {
       setLoad(false);
     }
@@ -277,6 +281,58 @@ const ProjectProvider = ({ children }) => {
     }
   };
 
+  const submitTeammate = async teammate => {
+    try {
+      setLoad(true)
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.post('/projects/teammates', {teammate}, config)
+      setTeammate(data.data)
+      setAlert({})
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.message,
+        error: true
+      });
+    }
+    finally{
+      setLoad(false)
+    }
+  }
+
+  const addTeammate = async teammate => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.post(`/projects/teammates/${project._id}`, teammate, config);
+      setAlert({
+        msg: data.message,
+        error: false
+      });
+      setTeammate({})
+      setTimeout(() => {
+        setAlert({})
+      }, 3000);
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.message,
+        error: true
+      });
+    }
+  }
+
   return (
     <ProjectContext.Provider
       value={{
@@ -299,6 +355,9 @@ const ProjectProvider = ({ children }) => {
         handleModalDeleteTask,
         modalDelete,
         deleteTask,
+        submitTeammate,
+        teammate,
+        addTeammate
       }}
     >
       {children}

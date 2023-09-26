@@ -15,6 +15,7 @@ const checkAuth = async (req, res, next) => {
     }
 
     if(!token){
+        console.log(token)
         return res.status(401).json({status: 401, message: "Token invalid"})
     }
     
