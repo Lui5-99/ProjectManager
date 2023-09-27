@@ -9,6 +9,9 @@ import Alert from "../components/Alert";
 import Teammate from "../components/Teammate";
 import ModalDeleteTeammate from "../components/ModalDeleteTeammate";
 import useAdmin from "../hooks/useAdmin";
+import io from 'socket.io-client'
+
+let socket
 
 const Project = () => {
   const params = useParams();
@@ -21,6 +24,9 @@ const Project = () => {
     handleModalTask,
     handleModalDeleteTask,
     alert,
+    submitTaskProject,
+    submitDeleteTaskProject,
+    submitEditTaskProject
   } = useProject();
 
   const [modal, setModal] = useState(false);
@@ -28,6 +34,35 @@ const Project = () => {
   useEffect(() => {
     getProject(params.id);
   }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL)
+    socket.emit('openProject', params.id)
+  }, [])
+
+  useEffect(() => {
+    socket.on('taskAdd', (newTask) => {
+      if(newTask.project === project._id){
+        submitTaskProject(newTask)
+      }
+    })
+    socket.on('taskDeleted', (taskDeleted) => {
+      if(taskDeleted.project === project._id){
+        submitDeleteTaskProject(taskDeleted)
+      }
+    })
+    socket.on('taskUpdated', (taskUpdated) => {
+      if(taskUpdated.project === project._id){
+        submitEditTaskProject(taskUpdated)
+      }
+    })
+  })
+
+  useEffect(() => {
+    socket.on('response', (object) => {
+      console.log(object)
+    })
+  })
 
   const { name } = project;
 

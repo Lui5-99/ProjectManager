@@ -1,6 +1,9 @@
 import { useState, useEffect, createContext } from "react";
 import clientAxios from "../config/clientAxios";
 import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
+
+let socket;
 
 const ProjectContext = createContext();
 
@@ -15,7 +18,7 @@ const ProjectProvider = ({ children }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [teammate, setTeammate] = useState({});
   const [modalDeleteTeammate, setModalDeleteTeammate] = useState(false);
-  const [modalSearch, setModalSearch] = useState(false)
+  const [modalSearch, setModalSearch] = useState(false);
 
   const navigate = useNavigate();
 
@@ -42,6 +45,10 @@ const ProjectProvider = ({ children }) => {
       } catch (error) {}
     };
     getProjects();
+  }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
   }, []);
 
   useEffect(() => {
@@ -143,13 +150,13 @@ const ProjectProvider = ({ children }) => {
       const { data } = await clientAxios.get(`/projects/${id}`, config);
       setProject(data.data);
     } catch (error) {
-      navigate('/projects')
+      navigate("/projects");
       setAlert({
         msg: error.response.data.message,
         error: true,
       });
       setTimeout(() => {
-        setAlert({})
+        setAlert({});
       }, 3000);
     } finally {
       setLoad(false);
@@ -201,11 +208,12 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.post("/tasks", task, config);
-      const projectCopy = { ...project };
-      projectCopy.tasks = [...project.tasks, data.data];
-      setProject(projectCopy);
+
       setAlert({});
       setModalTask(false);
+
+      //SOCKET IO
+      socket.emit("newTask", data.data);
     } catch (error) {
       console.log(error);
     }
@@ -222,20 +230,16 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.put(`/tasks/${task.id}`, task, config);
-      const copy = { ...project };
-      copy.tasks = copy.tasks.map((p) =>
-        p._id === data.data._id ? data.data : p
-      );
-      setProject(copy);
       setAlert({});
       setModalTask(false);
+      //socket io
+      socket.emit("editTask", task);
     } catch (error) {
       console.log(error);
     }
   };
 
   const submitTask = async (task) => {
-    console.log(task)
     if (task?.id) {
       await editTask(task);
     } else {
@@ -271,14 +275,15 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.delete(`/tasks/${task._id}`, config);
-      const copy = { ...project };
-      copy.tasks = copy.tasks.filter((p) => p._id !== task._id);
+
       setAlert({
         msg: data.message,
         error: false,
       });
-      setProject(copy);
       setModalDelete(false);
+      //socket io
+      socket.emit("removeTask", task);
+
       setTask({});
       setTimeout(() => {
         setAlert({});
@@ -389,7 +394,7 @@ const ProjectProvider = ({ children }) => {
     }
   };
 
-  const completeTask = async id => {
+  const completeTask = async (id) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -399,23 +404,45 @@ const ProjectProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await clientAxios.post(`/tasks/state/${id}`, {},config)
-      const copy = {...project}
-      copy.tasks = copy.tasks.map(task => task._id === data.data._id ? data.data : task)
-      setProject(copy)
-      setTask({})
-      setAlert({})
+      const { data } = await clientAxios.post(`/tasks/state/${id}`, {}, config);
+      const copy = { ...project };
+      copy.tasks = copy.tasks.map((task) =>
+        task._id === data.data._id ? data.data : task
+      );
+      setProject(copy);
+      setTask({});
+      setAlert({});
     } catch (error) {
       setAlert({
         msg: error.response.data.message,
-        error: true
-      })
+        error: true,
+      });
     }
-  }
+  };
 
   const handleSearch = () => {
-    setModalSearch(!modalSearch)
-  }
+    setModalSearch(!modalSearch);
+  };
+
+  //socket io
+  const submitTaskProject = (task) => {
+    const projectCopy = { ...project };
+    projectCopy.tasks = [...projectCopy.tasks, task];
+    setProject(projectCopy);
+  };
+
+  const submitDeleteTaskProject = (task) => {
+    const copy = { ...project };
+    copy.tasks = copy.tasks.filter((p) => p._id !== task._id);
+    setProject(copy);
+  };
+
+  const submitEditTaskProject = (task) => {
+    const copy = { ...project };
+    copy.tasks = copy.tasks.map((p) => (p._id === task._id ? task : p));
+    console.log(copy)
+    setProject(copy);
+  };
 
   return (
     <ProjectContext.Provider
@@ -447,7 +474,10 @@ const ProjectProvider = ({ children }) => {
         deleteTeammate,
         completeTask,
         handleSearch,
-        modalSearch
+        modalSearch,
+        submitTaskProject,
+        submitDeleteTaskProject,
+        submitEditTaskProject,
       }}
     >
       {children}
