@@ -128,6 +128,8 @@ const getProject = async (req, res) => {
       const error = new Error("Dont have permissions 4 this project");
       return res.status(401).json({ status: 401, message: error.message });
     }
+    const tasks = await Task.find().where("project").equals(result._id);
+    result.tasks = tasks
     return res
       .status(200)
       .json({ status: 200, message: "Project found", data: result });

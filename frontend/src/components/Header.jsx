@@ -7,7 +7,7 @@ const Header = () => {
   const {logout} = useProject();
 
   return (
-    <header className="px-4 py-5 bg-white dark:bg-zinc-900 border-b dark:border-black">
+    <header className="px-4 py-5 bg-white dark:bg-zinc-900 border-b dark:border-black fixed top-0 w-full">
       <div className="md:flex md:justify-between">
         <Link to="/projects">
           <h2 className="text-4xl text-sky-600 dark:text-indigo-600 font-black text-center">

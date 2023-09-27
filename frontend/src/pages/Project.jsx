@@ -21,6 +21,8 @@ const Project = () => {
     alert,
   } = useProject();
 
+  console.log(project)
+
   const [modal, setModal] = useState(false);
 
   useEffect(() => {

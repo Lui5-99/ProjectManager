@@ -140,6 +140,7 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.get(`/projects/${id}`, config);
+      console.log(data)
       setProject(data.data);
     } catch (error) {
       setAlert({
@@ -361,15 +362,15 @@ const ProjectProvider = ({ children }) => {
         { id: teammate._id },
         config
       );
-      const projectUpdated = { ...project };
-      projectUpdated.teammates = projectUpdated.teammates.filter(
-        (teammate) => teammate._id !== teammate._id
+      const copy = { ...project };
+      copy.teammates = copy.teammates.filter(
+        (state) => state._id !== teammate._id
       );
       setAlert({
         msg: data.message,
         error: false,
       });
-      setModalDeleteTeammate(false)
+      setModalDeleteTeammate(false);
       setProject(projectUpdated);
       setTeammate({});
       setTimeout(() => {

@@ -15,7 +15,7 @@ const Sidebar = () => {
 
   const { auth } = useAuth();
   return (
-    <aside className="md:w-80 lg:w-96 px-5 py-10">
+    <aside className="md:w-80 lg:w-96 px-5 py-10 fixed">
       <div className="text-xl font-bold dark:text-white">Hi, {auth.name}{emoji}</div>
       <Link
         to="newproject"
