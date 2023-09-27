@@ -46,14 +46,25 @@ const ModalFormTask = () => {
       }, 3000);
       return;
     }
-    await submitTask({
-      id,
-      name,
-      description,
-      deadline,
-      priority,
-      project: params.id,
-    });
+    if(id){
+      await submitTask({
+        id,
+        name,
+        description,
+        deadline,
+        priority,
+        project: params.id,
+      });
+    }
+    else{
+      await submitTask({
+        name,
+        description,
+        deadline,
+        priority,
+        project: params.id,
+      });
+    }
     setName("");
     setDescription("");
     setDeadline("");

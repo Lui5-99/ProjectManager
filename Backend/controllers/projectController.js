@@ -117,7 +117,7 @@ const getProject = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await Project.findById(id)
-      .populate("tasks")
+      .populate({path: "tasks", populate: {path: "complete", select: "name"}})
       .populate("teammates", "name email");
     if (
       result.createdBy.toString() !== req.user._id.toString() &&
@@ -128,15 +128,13 @@ const getProject = async (req, res) => {
       const error = new Error("Dont have permissions 4 this project");
       return res.status(401).json({ status: 401, message: error.message });
     }
-    const tasks = await Task.find().where("project").equals(result._id);
-    result.tasks = tasks
     return res
       .status(200)
       .json({ status: 200, message: "Project found", data: result });
   } catch (error) {
     return res.status(404).json({
       status: 404,
-      message: "Project not found",
+      message: error.message,
       url: "/projects/:id",
     });
   }

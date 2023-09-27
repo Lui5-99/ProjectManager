@@ -2,24 +2,28 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Theme from "./Theme";
 import useProject from "../hooks/useProjects";
+import Search from "./Search";
 
 const Header = () => {
-  const {logout} = useProject();
+  const { logout, handleSearch } = useProject();
 
   return (
     <header className="px-4 py-5 bg-white dark:bg-zinc-900 border-b dark:border-black fixed top-0 w-full">
       <div className="md:flex md:justify-between">
         <Link to="/projects">
-          <h2 className="text-4xl text-sky-600 dark:text-indigo-600 font-black text-center">
+          <h2 className="text-4xl text-sky-600 dark:text-indigo-600 font-black text-center mb-5 md:mb-0">
             Project Manager
           </h2>
         </Link>
-        <input
-          type="search"
-          placeholder="Search project"
-          className="rounded-lg lg:w-96 block p-2 border dark:border-black dark:text-white dark:bg-gray-500 dark:placeholder:text-white"
-        />
-        <div className="flex items-center gap-4">
+
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <button
+            onClick={handleSearch}
+            type="button"
+            className="font-bold uppercase dark:text-white"
+          >
+            Search project
+          </button>
           <Theme />
           <Link className="font-bold uppercase dark:text-white" to="/projects">
             Projects
@@ -31,6 +35,7 @@ const Header = () => {
           >
             Log Out
           </button>
+          <Search />
         </div>
       </div>
     </header>

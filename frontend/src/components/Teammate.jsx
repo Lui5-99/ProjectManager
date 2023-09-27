@@ -8,8 +8,8 @@ const Teammate = ({ teammate }) => {
     <>
       <div className="border-b p-5 flex justify-between items-center">
         <div>
-          <p className="font-black">{name}</p>
-          <p className="text-sm text-gray-700">{email}</p>
+          <p className="font-black dark:text-white">{name}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-400">{email}</p>
         </div>
         <div className="">
           <button

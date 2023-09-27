@@ -24,7 +24,7 @@ const Formteammate = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white dark:bg-zinc-900 py-10 px-5 md:w-1/2 rounded-lg shadow"
+      className="bg-white dark:bg-zinc-900 py-10 px-5 w-full md:w-1/2 rounded-lg shadow"
     >
       {msg && <Alert alert={alert} />}
       <div className="mb-5">

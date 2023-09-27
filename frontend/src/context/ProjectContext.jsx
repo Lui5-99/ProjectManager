@@ -15,6 +15,7 @@ const ProjectProvider = ({ children }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [teammate, setTeammate] = useState({});
   const [modalDeleteTeammate, setModalDeleteTeammate] = useState(false);
+  const [modalSearch, setModalSearch] = useState(false)
 
   const navigate = useNavigate();
 
@@ -140,13 +141,16 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.get(`/projects/${id}`, config);
-      console.log(data)
       setProject(data.data);
     } catch (error) {
+      navigate('/projects')
       setAlert({
         msg: error.response.data.message,
         error: true,
       });
+      setTimeout(() => {
+        setAlert({})
+      }, 3000);
     } finally {
       setLoad(false);
     }
@@ -231,6 +235,7 @@ const ProjectProvider = ({ children }) => {
   };
 
   const submitTask = async (task) => {
+    console.log(task)
     if (task?.id) {
       await editTask(task);
     } else {
@@ -384,6 +389,34 @@ const ProjectProvider = ({ children }) => {
     }
   };
 
+  const completeTask = async id => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await clientAxios.post(`/tasks/state/${id}`, {},config)
+      const copy = {...project}
+      copy.tasks = copy.tasks.map(task => task._id === data.data._id ? data.data : task)
+      setProject(copy)
+      setTask({})
+      setAlert({})
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.message,
+        error: true
+      })
+    }
+  }
+
+  const handleSearch = () => {
+    setModalSearch(!modalSearch)
+  }
+
   return (
     <ProjectContext.Provider
       value={{
@@ -412,6 +445,9 @@ const ProjectProvider = ({ children }) => {
         handleModalDeleteTeammate,
         modalDeleteTeammate,
         deleteTeammate,
+        completeTask,
+        handleSearch,
+        modalSearch
       }}
     >
       {children}

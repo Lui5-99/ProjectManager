@@ -27,6 +27,10 @@ const taskSchema = Schema({
   project: {
     type: Schema.Types.ObjectId,
     ref: 'Project'
+  },
+  complete: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   }
 },{
   timestamps: true
