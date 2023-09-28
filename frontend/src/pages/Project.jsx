@@ -26,7 +26,8 @@ const Project = () => {
     alert,
     submitTaskProject,
     submitDeleteTaskProject,
-    submitEditTaskProject
+    submitEditTaskProject,
+    submitChangeState
   } = useProject();
 
   const [modal, setModal] = useState(false);
@@ -54,6 +55,11 @@ const Project = () => {
     socket.on('taskUpdated', (taskUpdated) => {
       if(taskUpdated.project === project._id){
         submitEditTaskProject(taskUpdated)
+      }
+    })
+    socket.on('taskComplete', (changeState) => {
+      if(changeState.project === project._id){
+        submitChangeState(changeState)
       }
     })
   })

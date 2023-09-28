@@ -2,6 +2,7 @@ import { useState, useEffect, createContext } from "react";
 import clientAxios from "../config/clientAxios";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
+import useAuth from '../hooks/useAuth'
 
 let socket;
 
@@ -19,6 +20,8 @@ const ProjectProvider = ({ children }) => {
   const [teammate, setTeammate] = useState({});
   const [modalDeleteTeammate, setModalDeleteTeammate] = useState(false);
   const [modalSearch, setModalSearch] = useState(false);
+
+  const { auth } = useAuth()
 
   const navigate = useNavigate();
 
@@ -45,7 +48,7 @@ const ProjectProvider = ({ children }) => {
       } catch (error) {}
     };
     getProjects();
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     socket = io(import.meta.env.VITE_BACKEND_URL);
@@ -405,13 +408,11 @@ const ProjectProvider = ({ children }) => {
         },
       };
       const { data } = await clientAxios.post(`/tasks/state/${id}`, {}, config);
-      const copy = { ...project };
-      copy.tasks = copy.tasks.map((task) =>
-        task._id === data.data._id ? data.data : task
-      );
-      setProject(copy);
+
       setTask({});
       setAlert({});
+      //socket io
+      socket.emit('changeState', data.data)
     } catch (error) {
       setAlert({
         msg: error.response.data.message,
@@ -440,7 +441,15 @@ const ProjectProvider = ({ children }) => {
   const submitEditTaskProject = (task) => {
     const copy = { ...project };
     copy.tasks = copy.tasks.map((p) => (p._id === task._id ? task : p));
-    console.log(copy)
+    console.log(copy);
+    setProject(copy);
+  };
+
+  const submitChangeState = (task) => {
+    const copy = { ...project };
+    copy.tasks = copy.tasks.map((p) =>
+      (p._id === task._id ? task : p)
+    );
     setProject(copy);
   };
 
@@ -478,6 +487,7 @@ const ProjectProvider = ({ children }) => {
         submitTaskProject,
         submitDeleteTaskProject,
         submitEditTaskProject,
+        submitChangeState
       }}
     >
       {children}
