@@ -58,17 +58,18 @@ const Project = () => {
       }
     })
     socket.on('taskComplete', (changeState) => {
-      if(changeState.project === project._id){
+      console.log(changeState)
+      if(changeState.project._id === project._id){
         submitChangeState(changeState)
       }
     })
   })
 
-  useEffect(() => {
-    socket.on('response', (object) => {
-      console.log(object)
-    })
-  })
+  // useEffect(() => {
+  //   socket.on('response', (object) => {
+  //     console.log(object)
+  //   })
+  // })
 
   const { name } = project;
 

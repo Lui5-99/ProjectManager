@@ -58,6 +58,7 @@ io.on('connection', socket => {
 
   socket.on('openProject', (project) => {
     socket.join(project)
+    console.log('open room', project)
   })
 
   socket.on('newTask', (task) => {
@@ -72,11 +73,14 @@ io.on('connection', socket => {
 
   socket.on('editTask', (task) => {
     const project = task.project
+    console.log(task)
+    console.log('Edit', project)
     socket.to(project).emit('taskUpdated', task)
   })
 
   socket.on('changeState', (task) => {
-    const project = task.project
+    const project = task.project._id
+    console.log("Change state", task.project._id)
     socket.to(project).emit('taskComplete', task)
   })
 })

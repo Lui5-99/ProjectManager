@@ -48,7 +48,7 @@ const ProjectProvider = ({ children }) => {
       } catch (error) {}
     };
     getProjects();
-  }, [auth]);
+  }, []);
 
   useEffect(() => {
     socket = io(import.meta.env.VITE_BACKEND_URL);
@@ -210,6 +210,7 @@ const ProjectProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
+      delete task.id 
       const { data } = await clientAxios.post("/tasks", task, config);
 
       setAlert({});
@@ -440,16 +441,15 @@ const ProjectProvider = ({ children }) => {
 
   const submitEditTaskProject = (task) => {
     const copy = { ...project };
-    copy.tasks = copy.tasks.map((p) => (p._id === task._id ? task : p));
-    console.log(copy);
+    console.log(task)
+    console.log(copy.tasks)
+    copy.tasks = copy.tasks.map((p) => p._id === task.id ? task : p);
     setProject(copy);
   };
 
   const submitChangeState = (task) => {
     const copy = { ...project };
-    copy.tasks = copy.tasks.map((p) =>
-      (p._id === task._id ? task : p)
-    );
+    copy.tasks = copy.tasks.map((p) => p._id === task._id ? task : p);
     setProject(copy);
   };
 
