@@ -48,7 +48,7 @@ const ProjectProvider = ({ children }) => {
       } catch (error) {}
     };
     getProjects();
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     socket = io(import.meta.env.VITE_BACKEND_URL);
